@@ -587,12 +587,12 @@ def expand_abbreviations(text: str) -> str:
 def normalize_russian(text, all_caps_to_lower=False):#, interactive_caps=False):
     text = unicodedata.normalize("NFKC", text) #It might convert symbols like "№" (commonly used in Russian) to a combination of "No".
     text = roman_to_int(text)
-    text = process_all_caps_words(text, all_caps_to_lower=all_caps_to_lower)#, interactive=interactive_caps)
-    text = expand_abbreviations(text)
-    text = normalize_dates(text)
-    text = currency_normalization(text)
-    text = normalize_text_with_phone_numbers(text)
-    text = convert_time_expressions(text)
-    text = normalize_text_with_numbers(text)
-    text = cyrrilize(text)
+    #text = process_all_caps_words(text, all_caps_to_lower=all_caps_to_lower)#, interactive=interactive_caps)
+    #text = expand_abbreviations(text)
+    #text = normalize_dates(text)
+    #text = currency_normalization(text)
+    #text = normalize_text_with_phone_numbers(text)
+    #text = convert_time_expressions(text)
+    #text = normalize_text_with_numbers(text)
+    #text = cyrrilize(text)
     return text
