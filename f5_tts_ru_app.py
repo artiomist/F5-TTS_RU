@@ -939,6 +939,6 @@ if __name__ == "__main__":
         app = create_gradio_app()
         logging.info("🚀 Launching Gradio app...")
         app.queue()
-        app.launch(inline=False)  # important for letting logging work after this line
+        app.launch(inline=False, share=True)  # important for letting logging work after this line
         logging.info("✅ Gradio interface has been successfully loaded.")
 
