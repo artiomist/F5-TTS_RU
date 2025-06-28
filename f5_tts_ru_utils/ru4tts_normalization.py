@@ -63,7 +63,14 @@ roman_regex = re.compile(
 )
 # Special context-based Roman numeral exception
 contextual_exceptions = re.compile(r'\b(Глава|Часть|Раздел|Том)\s+(I{1,3}|IV|V|VI{0,3}|IX|X)\b')
- 
+
+def is_latin_char(ch):
+    """Check if a single character is a Latin letter."""
+    try:
+        return ch.isalpha() and 'LATIN' in unicodedata.name(ch)
+    except ValueError:
+        return False
+        
 def roman_to_int(text: str) -> str:
     # First: apply contextual conversion (e.g. Глава I → Глава 1)
     def context_replace(match):
