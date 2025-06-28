@@ -9,6 +9,7 @@ Implemented
 - Currency expansion
 - Phone number expansion
 - Date
+- Roman numbers to arabic numbers
 """
 
 
@@ -47,12 +48,55 @@ pronunciation_map = {
     'Э': 'э', 'Ю': 'ю', 'Я': 'я'
 }
 
-def is_latin_char(ch):
-    """Check if a single character is a Latin letter."""
-    try:
-        return ch.isalpha() and 'LATIN' in unicodedata.name(ch)
-    except ValueError:
-        return False
+# Roman numeral to integer map
+roman_numerals = {
+    'M': 1000, 'CM': 900, 'D': 500, 'CD': 400,
+    'C': 100,  'XC': 90,  'L': 50,  'XL': 40,
+    'X': 10,   'IX': 9,   'V': 5,   'IV': 4,
+    'I': 1
+}
+# Strict Roman numeral regex (up to 3999, no single "I")
+roman_regex = re.compile(
+    r'\bM{0,3}(CM|CD|D?C{0,3})'
+    r'(XC|XL|L?X{0,3})'
+    r'(IX|IV|V?I{0,3})\b'
+)
+# Special context-based Roman numeral exception
+contextual_exceptions = re.compile(r'\b(Глава|Часть|Раздел|Том)\s+(I{1,3}|IV|V|VI{0,3}|IX|X)\b')
+ 
+def roman_to_int(text: str) -> str:
+    # First: apply contextual conversion (e.g. Глава I → Глава 1)
+    def context_replace(match):
+        word = match.group(1)
+        roman = match.group(2)
+        num = 0
+        i = 0
+        while i < len(roman):
+            if i + 1 < len(roman) and roman[i:i+2] in roman_numerals:
+                num += roman_numerals[roman[i:i+2]]
+                i += 2
+            else:
+                num += roman_numerals[roman[i]]
+                i += 1
+        return f"{word} {num}"
+
+    text = contextual_exceptions.sub(context_replace, text)
+
+    # Then: apply general Roman numeral conversion
+    def convert(match):
+        roman = match.group(0)
+        num = 0
+        i = 0
+        while i < len(roman):
+            if i + 1 < len(roman) and roman[i:i+2] in roman_numerals:
+                num += roman_numerals[roman[i:i+2]]
+                i += 2
+            else:
+                num += roman_numerals[roman[i]]
+                i += 1
+        return str(num)
+
+    return roman_regex.sub(convert, text)
 
 
 def cyrrilize(text: str) -> str:
@@ -535,6 +579,7 @@ def expand_abbreviations(text: str) -> str:
 
 def normalize_russian(text, all_caps_to_lower=False):#, interactive_caps=False):
     text = unicodedata.normalize("NFKC", text) #It might convert symbols like "№" (commonly used in Russian) to a combination of "No".
+    text = roman_to_int(text)
     text = process_all_caps_words(text, all_caps_to_lower=all_caps_to_lower)#, interactive=interactive_caps)
     text = expand_abbreviations(text)
     text = normalize_dates(text)
