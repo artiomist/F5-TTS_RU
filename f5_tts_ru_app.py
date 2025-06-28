@@ -48,6 +48,18 @@ def get_f5_tts_path():
 
 sys.path.insert(0, os.path.abspath(get_f5_tts_path()))
 
+def get_f5_tts_ru_path():
+    if os.path.exists("/content/F5_TTS_RU"):
+        return "/content/F5_TTS_RU"
+    else:
+        try:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+        except NameError:
+            current_dir = os.getcwd()
+        return os.path.abspath(os.path.join(current_dir, "..", "F5_TTS_RU"))
+
+sys.path.insert(0, get_f5_tts_ru_path())
+
 # F5-TTS Model
 from f5_tts.model import DiT
 from f5_tts.infer.utils_infer import (
