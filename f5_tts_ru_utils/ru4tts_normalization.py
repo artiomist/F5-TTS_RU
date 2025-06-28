@@ -73,6 +73,7 @@ def is_latin_char(ch):
         
 def roman_to_int(text: str) -> str:
     # First: apply contextual conversion (e.g. Глава I → Глава 1)
+    text = text.replace("Х", "X").replace("І", "I").replace("В", "V")
     def context_replace(match):
         word = match.group(1)
         roman = match.group(2)
@@ -585,7 +586,9 @@ def expand_abbreviations(text: str) -> str:
 
 
 def normalize_russian(text, all_caps_to_lower=False):#, interactive_caps=False):
+    print("BEFORE roman_to_int:\n", text)
     text = unicodedata.normalize("NFKC", text) #It might convert symbols like "№" (commonly used in Russian) to a combination of "No".
+    print("AFTER roman_to_int:\n", text)
     text = roman_to_int(text)
     #text = process_all_caps_words(text, all_caps_to_lower=all_caps_to_lower)#, interactive=interactive_caps)
     #text = expand_abbreviations(text)
