@@ -218,7 +218,10 @@ def russian_normalisation_accentuation(txt_path, accentizer, all_caps_to_lower=F
         for line in accented_lines:
             detect_multiple_stresses(line)
 
-        final_lines = insert_breaks(accented_lines, empty_line_counts, trailing_empty)
+        if config.USE_BREAKS_TAG:
+            final_lines = insert_breaks(accented_lines, empty_line_counts, trailing_empty)
+        else:
+            final_lines = accented_lines
 
         # Save final processed file
         with open(processed_path, 'w', encoding='utf-8') as outfile:
@@ -265,8 +268,10 @@ def process_text_with_accentuator(lines, accentizer):
 
 def normalize_punctuation(line):
     # Normalize rare punctuation
-    #line = line.replace('…', ". [ELLIPSISBREAK]").rstrip() #ellipsis
-    line = line.replace('…', ".").rstrip() #ellipsis
+    if config.USE_BREAKS_TAG:
+        line = line.replace('…', ". [ELLIPSISBREAK]").rstrip() #ellipsis
+    else:
+        line = line.replace('…', ".").rstrip() #ellipsis
     line = line.replace('⁈', '?')  # Replace interrobang
     line = line.replace('—', '-')  # em dash to regular dash
     line = line.replace('–', '-')  # en dash to regular dash
