@@ -1,0 +1,14 @@
+gradio
+ebooklib
+beautifulsoup4
+nltk
+pydub
+mutagen
+python-magic
+transformers
+torchaudio
+soundfile
+cached_path
+click
+pillow
+openai-whisper
