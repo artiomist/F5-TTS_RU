@@ -1,4 +1,5 @@
 # run_cli.py
+import sys
 import logging
 import click
 from f5_tts_ru_utils import config
