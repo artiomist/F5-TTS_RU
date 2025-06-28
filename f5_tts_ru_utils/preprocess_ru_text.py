@@ -272,6 +272,7 @@ def normalize_punctuation(line):
     line = line.replace('–', '-')  # en dash to regular dash
     line = line.replace('„', '"').replace('“', '"').replace('”', '"')
     line = line.replace('«', '"').replace('»', '"')
+    line = line.replace('* * *', '.')#* * *
 
     if re.search(r'[:;]$', line):
         line = line[:-1] + '.'
