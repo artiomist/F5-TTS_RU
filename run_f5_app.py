@@ -24,4 +24,25 @@ def main(port, host, share, api, gpu):
     )
 
 if __name__ == "__main__":
-    main()
+    try:
+        import spaces
+        USING_SPACES = True
+        logging.info("Running inside HuggingFace Spaces.")
+    except ImportError:
+        USING_SPACES = False
+        logging.info("Running locally.")
+
+    if not USING_SPACES:
+        logging.debug("Starting CLI entry point...")
+        logging.debug(f"CLI args: {sys.argv}")
+        try:
+            main()
+        except Exception as e:
+            logging.error(f"❌ Error: {e}", exc_info=True)
+            sys.exit(1)
+    else:
+        app = create_gradio_app()
+        logging.info("🚀 Launching Gradio app...")
+        app.queue()
+        app.launch(inline=False, share=True)  # important for letting logging work after this line
+        logging.info("✅ Gradio interface has been successfully loaded.")
