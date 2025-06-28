@@ -209,36 +209,53 @@ def get_f5tts_model(device):
         logging.info(f"Loading F5-TTS model on {device}...")
         
         #_f5tts_model_cache = {}
-        
-        #_f5tts_model_cache = {}
         model_cfg = {
             "dim": 1024, "depth": 22, "heads": 16,
             "ff_mult": 2, "text_dim": 512, "conv_layers": 4
         }
-        
+
+        model_dir = config.MODEL_DIR
         #ckpt_path = config.MODEL_CHECKPOINT_PATH
-        #vocab_file = config.VOCAB_FILE_PATH
+        #vocab_path = config.VOCAB_FILE_PATH
+
+        model_dir.mkdir(parents=True, exist_ok=True)
+
         # Load paths from config or fallback to HuggingFace download
         try:
             ckpt_path = config.MODEL_CHECKPOINT_PATH
-            vocab_file = config.VOCAB_FILE_PATH
         except AttributeError:
             ckpt_path = None
+        
+        try:
+            vocab_file = config.VOCAB_FILE_PATH
+        except AttributeError:
             vocab_file = None
 
-        if not ckpt_path or not os.path.exists(ckpt_path):
+
+        ckpt_path = os.path.join(ckpt_dir, "model_240000_inference.safetensors")
+        vocab_file = os.path.join(vocab_dir, "vocab.txt")
+
+        # Download checkpoint if not found
+        if not ckpt_path.exists():
             logging.warning("Checkpoint not found locally. Downloading from Hugging Face...")
             ckpt_path = hf_hub_download(
                 repo_id="Misha24-10/F5-TTS_RUSSIAN",
-                filename="F5TTS_v1_Base/model_240000_inference.safetensors"
+                filename="F5TTS_v1_Base/model_240000_inference.safetensors",
+                local_dir=str(model_dir),
+                local_dir_use_symlinks=False
             )
+            ckpt_path = Path(ckpt_path)
 
-        if not vocab_file or not os.path.exists(vocab_file):
+        # Download vocab if not found
+        if not vocab_path.exists():
             logging.warning("Vocab file not found locally. Downloading from Hugging Face...")
-            vocab_file = hf_hub_download(
+            vocab_path = hf_hub_download(
                 repo_id="Misha24-10/F5-TTS_RUSSIAN",
-                filename="F5TTS_v1_Base/vocab.txt"
-            )        
+                filename="F5TTS_v1_Base/vocab.txt",
+                local_dir=str(model_dir),
+                local_dir_use_symlinks=False
+            )
+            vocab_path = Path(vocab_path)
 
         
         f5tts_model = load_model(DiT, model_cfg, str(ckpt_path), vocab_file=str(vocab_file))
