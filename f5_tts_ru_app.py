@@ -230,7 +230,7 @@ def get_f5tts_model(device):
             logging.warning("Checkpoint not found locally. Downloading from Hugging Face...")
             ckpt_path = hf_hub_download(
                 repo_id="Misha24-10/F5-TTS_RUSSIAN",
-                filename="F5TTS_v1_Base/model_last.safetensors"
+                filename="F5TTS_v1_Base/model_240000_inference.safetensors"
             )
 
         if not vocab_file or not os.path.exists(vocab_file):
