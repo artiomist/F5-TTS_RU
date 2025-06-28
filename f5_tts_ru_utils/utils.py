@@ -147,7 +147,8 @@ def extract_text_and_title_and_author_from_epub(epub_path, txt_debug_dir):
             if item:
                 soup = BeautifulSoup(item.get_content(), 'html.parser')
                 text = soup.get_text(separator='\n', strip=True)
-                chapter_text_with_marker = f"{chapter_title}\n[BREAK]\n{text}"
+                #chapter_text_with_marker = f"{chapter_title}\n[BREAK]\n{text}"
+                chapter_text_with_marker = text
                 chapters.append((chapter_title, chapter_text_with_marker))
     except Exception as e:
         logging.error(f"TOC (NCX) parsing failed: {e}")
