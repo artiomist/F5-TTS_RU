@@ -1,14 +1,29 @@
-gradio
-ebooklib
-beautifulsoup4
-nltk
-pydub
-mutagen
-python-magic
-transformers
+#Machine Learning & Core
+torch
+numpy
+
+#Audio Processing & TTS
 torchaudio
 soundfile
-cached_path
-click
-pillow
+pydub
+ffmpeg-python # Often required by pydub for MP3/M4A conversion
 openai-whisper
+vocos
+
+#Web Application Framework
+gradio
+click
+
+#eBook and Text Processing
+ebooklib          # For reading and writing EPUB files
+beautifulsoup4    # For parsing HTML/XML content within eBooks
+lxml              # A robust parser often used with BeautifulSoup
+mutagen           # For reading/writing MP3 (ID3) and M4A (MP4) metadata
+ruaccent          # For Russian language accentuation (stress marks)
+python-magic      # For detecting file types (e.g., fb2, epub)
+
+
+#nltk
+#transformers
+#cached_path
+pillow
