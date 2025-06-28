@@ -265,7 +265,8 @@ def process_text_with_accentuator(lines, accentizer):
 
 def normalize_punctuation(line):
     # Normalize rare punctuation
-    line = line.replace('…', ". [ELLIPSISBREAK]").rstrip() #ellipsis
+    #line = line.replace('…', ". [ELLIPSISBREAK]").rstrip() #ellipsis
+    line = line.replace('…', ".").rstrip() #ellipsis
     line = line.replace('⁈', '?')  # Replace interrobang
     line = line.replace('—', '-')  # em dash to regular dash
     line = line.replace('–', '-')  # en dash to regular dash
