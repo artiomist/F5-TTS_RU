@@ -2,7 +2,7 @@
 import logging
 import click
 from f5_tts_ru_utils import config
-from F5_TTS_RU.f5_tts_ru_app import create_gradio_app
+from f5_tts_ru_app import create_gradio_app
 
 @click.command()
 @click.option("--port", "-p", default=7860, type=int, help="Port to run the app on")
