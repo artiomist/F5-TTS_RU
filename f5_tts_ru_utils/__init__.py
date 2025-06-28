@@ -1,1 +1,1 @@
-# ru_ebook_files/__init__.py
+# f5_tts_ru_utils/__init__.py
