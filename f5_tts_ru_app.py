@@ -42,6 +42,7 @@ from f5_tts.infer.utils_infer import (
     infer_process,
     #chunk_text,
 )
+from huggingface_hub import hf_hub_download
 
 from vocos import Vocos
 
@@ -182,12 +183,37 @@ def get_f5tts_model(device):
         
         #_f5tts_model_cache = {}
         
-        ckpt_path = config.MODEL_CHECKPOINT_PATH
-        vocab_file = config.VOCAB_FILE_PATH
+        #_f5tts_model_cache = {}
         model_cfg = {
             "dim": 1024, "depth": 22, "heads": 16,
             "ff_mult": 2, "text_dim": 512, "conv_layers": 4
         }
+        
+        #ckpt_path = config.MODEL_CHECKPOINT_PATH
+        #vocab_file = config.VOCAB_FILE_PATH
+        # Load paths from config or fallback to HuggingFace download
+        try:
+            ckpt_path = config.MODEL_CHECKPOINT_PATH
+            vocab_file = config.VOCAB_FILE_PATH
+        except AttributeError:
+            ckpt_path = None
+            vocab_file = None
+
+        if not ckpt_path or not os.path.exists(ckpt_path):
+            logging.warning("Checkpoint not found locally. Downloading from Hugging Face...")
+            ckpt_path = hf_hub_download(
+                repo_id="Misha24-10/F5-TTS_RUSSIAN",
+                filename="F5TTS_v1_Base/model_last.safetensors"
+            )
+
+        if not vocab_file or not os.path.exists(vocab_file):
+            logging.warning("Vocab file not found locally. Downloading from Hugging Face...")
+            vocab_file = hf_hub_download(
+                repo_id="Misha24-10/F5-TTS_RUSSIAN",
+                filename="F5TTS_v1_Base/vocab.txt"
+            )        
+
+        
         f5tts_model = load_model(DiT, model_cfg, str(ckpt_path), vocab_file=str(vocab_file))
         f5tts_model.eval()
         #_f5tts_model_cache[device] = f5tts_model.to(device)
