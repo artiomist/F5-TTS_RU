@@ -1,7 +1,7 @@
 # run_cli.py
 import logging
 import click
-from . import config
+from f5_tts_ru_utils import config
 from F5_TTS_RU.f5_tts_ru_app import create_gradio_app
 
 @click.command()
