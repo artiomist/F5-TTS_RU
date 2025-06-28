@@ -220,7 +220,7 @@ def extract_chapters_ordered_by_toc(book):
     
     
 #----2.3 Extract data for TXT->WAV----
-def extract_cover(ebook_path):
+'''def extract_cover(ebook_path):
     """Extract cover image from the eBook."""
     try:
         cover_path = os.path.splitext(ebook_path)[0] + '.jpg'
@@ -237,6 +237,56 @@ def extract_cover(ebook_path):
     except Exception as e:
         print(f"Error extracting eBook cover: {e}")
     return None    
+'''
+
+
+def extract_cover(ebook_path):
+    """
+    Extract cover image from the eBook (EPUB).
+    Tries ebook-meta (Calibre) first; falls back to Python EPUB parser.
+    Returns path to cover image or None.
+    """
+    cover_path = Path(ebook_path).with_suffix('.jpg')
+
+    # Try Calibre's ebook-meta if available
+    try:
+        result = subprocess.run(
+            ['ebook-meta', ebook_path, '--get-cover', str(cover_path)],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False  # Don't raise, we'll check manually
+        )
+
+        if cover_path.exists() and cover_path.stat().st_size > 0:
+            print("Cover extracted using ebook-meta.")
+            return str(cover_path)
+        else:
+            print("ebook-meta failed or no cover found. Trying Python fallback.")
+    except FileNotFoundError:
+        print("ebook-meta not found. Falling back to Python method.")
+
+    # Fallback: use pure Python EPUB cover extractor
+    return extract_cover_python(ebook_path)
+
+# ---- Python-only fallback using ebooklib ----
+def extract_cover_python(ebook_path):
+    try:
+        from ebooklib import epub
+        import io
+
+        book = epub.read_epub(ebook_path)
+        for item in book.get_items():
+            if item.get_type() == 9 and 'cover' in item.get_name().lower():  # 9 = IMAGE
+                cover_path = Path(ebook_path).with_stem(Path(ebook_path).stem + '_cover').with_suffix('.jpg')
+                with open(cover_path, 'wb') as f:
+                    f.write(item.get_content())
+                print("Cover extracted using Python EPUB parser.")
+                return str(cover_path)
+
+        print("No cover found in EPUB using Python.")
+    except Exception as e:
+        print(f"Python-based cover extraction failed: {e}")
+    return None
 
 def ensure_even_dimensions(image_path):
     img = Image.open(image_path)
