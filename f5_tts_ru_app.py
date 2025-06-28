@@ -32,7 +32,22 @@ import numpy as np
 # Web / EPUB / HTML Processing
 import click
 
-sys.path.insert(0, os.path.abspath("D:\F5-TTS"))
+def get_f5_tts_path():
+    if os.path.exists("/content/F5-TTS"):
+        return "/content/F5-TTS"  # Colab path
+    else:
+        try:
+            # Script context
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+        except NameError:
+            # Notebook context
+            current_dir = os.getcwd()
+
+        f5_tts_path = os.path.abspath(os.path.join(current_dir, "..", "F5-TTS"))
+        return f5_tts_path
+
+sys.path.insert(0, os.path.abspath(get_f5_tts_path()))
+
 # F5-TTS Model
 from f5_tts.model import DiT
 from f5_tts.infer.utils_infer import (
