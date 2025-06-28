@@ -106,6 +106,7 @@ def extract_text_and_title_and_author_from_epub(epub_path, txt_debug_dir):
     author = None 
     chapters = []#chapters: List[Tuple[str, str]]
 
+    # --- Extract metadata ---
     try:
         # Extract title
         title_metadata = book.get_metadata('DC', 'title')
@@ -134,47 +135,50 @@ def extract_text_and_title_and_author_from_epub(epub_path, txt_debug_dir):
         if author is None: # Ensure author has a fallback
             author = config.DEFAULT_AUTHOR # Default if no author found
             logging.info(f"Using '{author}' due to error in metadata extraction.")
+
     
     
-    # Try NCX-based parsing
-    """try:
-        toc = book.toc
-        for toc_entry in toc:
-            if isinstance(toc_entry, epub.Link):
-                href = toc_entry.href
-                label = toc_entry.title
-                item = book.get_item_with_href(href)
-                if item:
-                    soup = BeautifulSoup(item.get_content(), 'html.parser')
-                    text = soup.get_text(separator='\n', strip=True)
-                    chapters.append((label.strip(), text.strip()))
-    except Exception as e:
-        print(f"TOC (NCX) parsing failed: {e}")
-    """
-    # Fallback heading-based parsing
+    # --- Extract chapters using NCX (TOC) ---
     try:
-        for item in book.items:
-            #if item.get_type() == epub.ITEM_DOCUMENT:
-            if isinstance(item, EpubHtml):
+        toc_entries = extract_chapters_ordered_by_toc(book)
+
+        for chapter_title, href in toc_entries:
+            item = book.get_item_with_href(href)
+            if item:
                 soup = BeautifulSoup(item.get_content(), 'html.parser')
-                h1 = soup.find('h1')
-                h2 = soup.find('h2')
-                if h1:
-                    chapter_title = h1.get_text(strip=True)
-                    h1.decompose()  # Remove the h1 tag from soup
-                elif h2:
-                    chapter_title = h2.get_text(strip=True)
-                    h2.decompose()  # Remove the h2 tag from soup
-                else:
-                    chapter_title = "."
-                    
-                chapter_text = soup.get_text(separator='\n', strip=True) # Extract full chapter text
-                # Insert [BREAK] after the <h1> content
-                chapter_text_with_marker = f"{chapter_title}\n[BREAK]\n{chapter_text}"
+                text = soup.get_text(separator='\n', strip=True)
+                chapter_text_with_marker = f"{chapter_title}\n[BREAK]\n{text}"
                 chapters.append((chapter_title, chapter_text_with_marker))
     except Exception as e:
-        logging.error(f"Error parsing item {item.get_id()}: {e}")
+        logging.error(f"TOC (NCX) parsing failed: {e}")
 
+    # --- Fallback if TOC failed ---
+    if not chapters:
+        # Fallback heading-based parsing
+        try:
+            for item in book.items:
+                #if item.get_type() == epub.ITEM_DOCUMENT:
+                if isinstance(item, EpubHtml):
+                    soup = BeautifulSoup(item.get_content(), 'html.parser')
+                    h1 = soup.find('h1')
+                    h2 = soup.find('h2')
+                    if h1:
+                        chapter_title = h1.get_text(strip=True)
+                        h1.decompose()  # Remove the h1 tag from soup
+                    elif h2:
+                        chapter_title = h2.get_text(strip=True)
+                        h2.decompose()  # Remove the h2 tag from soup
+                    else:
+                        chapter_title = "."
+                        
+                    chapter_text = soup.get_text(separator='\n', strip=True) # Extract full chapter text
+                    # Insert [BREAK] after the <h1> content
+                    chapter_text_with_marker = f"{chapter_title}\n[BREAK]\n{chapter_text}"
+                    chapters.append((chapter_title, chapter_text_with_marker))
+        except Exception as e:
+            logging.error(f"Error parsing item {item.get_id()}: {e}")
+
+    # --- Save extracted chapters ---
     # Save and process chapters if any were found
     logging.info("Processing chapters")
     if not chapters or not any(ch_text.strip() for _, ch_text in chapters):
@@ -204,6 +208,15 @@ def extract_text_and_title_and_author_from_epub(epub_path, txt_debug_dir):
         #chapters = processed_chapters
 
     return chapters, title, author
+
+def extract_chapters_ordered_by_toc(book):
+    def flatten_toc(items):
+        for item in items:
+            if isinstance(item, epub.Link):
+                yield (item.title, item.href.split('#')[0])
+            elif isinstance(item, (list, tuple)):
+                yield from flatten_toc(item)
+    return list(flatten_toc(book.toc))
     
     
 #----2.3 Extract data for TXT->WAV----
