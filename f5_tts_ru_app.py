@@ -250,12 +250,12 @@ def get_f5tts_model(device):
         if not Path(vocab_file).exists():
             logging.warning("Vocab file not found locally. Downloading from Hugging Face...")
             vocab_file = hf_hub_download(
-                repo_id="Misha24-10/F5-TTS_RUSSIAN/",
+                repo_id="Misha24-10/F5-TTS_RUSSIAN",
                 filename="F5TTS_v1_Base/vocab.txt",#
                 local_dir=str(model_dir),
                 local_dir_use_symlinks=False
             )
-            vocab_path = Path(vocab_path)
+            vocab_file = Path(vocab_file)
 
         
         f5tts_model = load_model(DiT, model_cfg, str(ckpt_path), vocab_file=str(vocab_file))
