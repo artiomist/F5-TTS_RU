@@ -236,7 +236,7 @@ def get_f5tts_model(device):
         vocab_file = os.path.join(vocab_file, "vocab.txt")
 
         # Download checkpoint if not found
-        if not ckpt_path.exists():
+        if not Path(ckpt_path).exists():
             logging.warning("Checkpoint not found locally. Downloading from Hugging Face...")
             ckpt_path = hf_hub_download(
                 repo_id="Misha24-10/F5-TTS_RUSSIAN",
@@ -247,7 +247,7 @@ def get_f5tts_model(device):
             ckpt_path = Path(ckpt_path)
 
         # Download vocab if not found
-        if not vocab_path.exists():
+        if not Path(vocab_path).exists():
             logging.warning("Vocab file not found locally. Downloading from Hugging Face...")
             vocab_path = hf_hub_download(
                 repo_id="Misha24-10/F5-TTS_RUSSIAN",
