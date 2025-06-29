@@ -32,8 +32,8 @@ TTS_SPEED = 1 #Default 1
 #DEFAULT_VOICE_NAME = "ru-RU-DmitryNeural"
 #USE_VOICE_REFERENCE = True
 MODEL_DIR = PROJECT_PATH / PROJECT_DIR / "ru_model"
-VOCAB_FILE_PATH = MODEL_DIR / "vocab.txt"
-MODEL_CHECKPOINT_PATH = MODEL_DIR / "model_240000_inference.safetensors"
+VOCAB_FILE_PATH = MODEL_DIR / "F5TTS_v1_Base/vocab.txt"
+MODEL_CHECKPOINT_PATH = MODEL_DIR / "F5TTS_v1_Base/model_240000_inference.safetensors"
 DEFAULT_REF_AUDIO_PATH = PROJECT_PATH / PROJECT_DIR / "ref" / "Edge_Дмитрий_voice_sample/ru-RU-DmitryNeural.mp3"
 DEFAULT_REF_TEXT = "Здравствуйте. Это пример предложения на русском языке."
 
