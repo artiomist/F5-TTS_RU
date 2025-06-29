@@ -169,7 +169,7 @@ def preprocess_ru_text(file, all_caps_to_lower, verification_dict_all_default_to
         logging.debug(f"📝 Title/Author saved to: {title_author_path}")
 
         result = f"✅ Preprocessing done for: {sanitized_name}"
-        logging.info(f"[PREPROCESS] {result}")
+        logging.info(f"[PREPROCESS] {result}. Plese proceed to Inference.")
         #yield gr.Textbox.update("✅ Preprocessing done!")
         
         return result
