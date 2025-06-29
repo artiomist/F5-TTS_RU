@@ -232,8 +232,8 @@ def get_f5tts_model(device):
             vocab_file = None
 
 
-        ckpt_path = os.path.join(ckpt_dir, "model_240000_inference.safetensors")
-        vocab_file = os.path.join(vocab_dir, "vocab.txt")
+        ckpt_path = os.path.join(ckpt_path, "model_240000_inference.safetensors")
+        vocab_file = os.path.join(vocab_file, "vocab.txt")
 
         # Download checkpoint if not found
         if not ckpt_path.exists():
