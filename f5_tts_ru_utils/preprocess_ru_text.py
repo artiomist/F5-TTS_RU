@@ -27,8 +27,16 @@ import string              # Used in detect_multiple_stresses
 # =========================
 # ⚙️ Environment Configs
 # =========================
-magic_path = Path(__file__).parent / "libmagic" / "magic.mgc"
-os.environ["MAGIC"] = str(magic_path.resolve())
+def running_in_colab():
+    try:
+        import google.colab
+        return True
+    except ImportError:
+        return False
+
+if not running_in_colab():
+    magic_path = Path(__file__).parent / "libmagic" / "magic.mgc"
+    os.environ["MAGIC"] = str(magic_path.resolve())
 # =========================
 # 🧠  Accentizer
 # =========================
